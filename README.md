@@ -269,3 +269,129 @@ This endpoint is used to log out the authenticated user. It clears the authentic
 - **Model:** `user.model.js`
 - **Service:** `user.service.js`
 - **Routes:** `user.routes.js`
+
+
+# API Documentation
+
+## Driver Endpoints
+
+### 1. `/drivers/register-driver`
+
+#### Description
+
+This endpoint is used to register a new driver in the application. It accepts driver details, validates the input, hashes the password, and creates a new driver in the database. Upon successful registration, it returns an authentication token and the driver details.
+
+#### Endpoint
+
+**URL:** `/drivers/register-driver`  
+**Method:** `POST`
+
+#### Request Body
+
+The request body must be sent in JSON format and include the following fields:
+
+##### Required Fields:
+
+- **fullname.firstname**: (String) First name of the driver. Must be at least 3 characters long.
+- **fullname.lastname**: (String) Last name of the driver. Optional but must be at least 3 characters long if provided.
+- **email**: (String) Email address of the driver. Must be a valid email format.
+- **password**: (String) Password for the driver account. Must be at least 6 characters long.
+- **vehicle.color**: (String) Color of the vehicle. Must be at least 3 characters long.
+- **vehicle.plateNum**: (String) Vehicle plate number. Must match the format `[A-Z]{2}\s?[0-9]{1,2}\s?[A-Z]{1,3}\s?[0-9]{1,4}`.
+- **vehicle.capacity**: (Number) Capacity of the vehicle. Must be at least 1.
+- **vehicle.vehicleType**: (String) Type of the vehicle. Must be one of `car`, `bike`, `scooty`, or `auto`.
+
+##### Example Request Body:
+
+```json
+{
+  "fullname": {
+    "firstname": "Jane",
+    "lastname": "Doe"
+  },
+  "email": "jane.doe@example.com",
+  "password": "securepassword123",
+  "vehicle": {
+    "color": "Red",
+    "plateNum": "MH 12 AB 1234",
+    "capacity": 4,
+    "vehicleType": "car"
+  }
+}
+```
+
+#### Response
+
+##### Success Response:
+
+- **Status Code:** `201 Created`
+- **Body:**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "driver": {
+    "_id": "60d21b4667d0d8992e610c85",
+    "fullname": {
+      "firstname": "Jane",
+      "lastname": "Doe"
+    },
+    "email": "jane.doe@example.com",
+    "vehicle": {
+      "color": "Red",
+      "plateNum": "MH 12 AB 1234",
+      "capacity": 4,
+      "vehicleType": "car"
+    }
+  }
+}
+```
+
+##### Error Responses:
+
+1. **Validation Errors:**
+   - **Status Code:** `400 Bad Request`
+   - **Body:**
+   ```json
+   {
+     "errors": [
+       {
+         "msg": "First name should be at least 3 characters long",
+         "param": "fullname.firstname",
+         "location": "body"
+       },
+       {
+         "msg": "Please enter a valid vehicle plate number",
+         "param": "vehicle.plateNum",
+         "location": "body"
+       }
+     ]
+   }
+   ```
+
+2. **Driver Already Exists:**
+   - **Status Code:** `400 Bad Request`
+   - **Body:**
+   ```json
+   {
+     "error": "Driver with this email already exists"
+   }
+   ```
+
+---
+
+## Notes
+
+- Passwords are hashed before being stored in the database for security purposes.
+- All endpoints use `express-validator` for input validation where applicable.
+- Ensure the `Authorization` header is included in requests requiring authentication.
+
+## Related Files
+
+- **Controller:** `driver.controller.js`
+- **Model:** `driver.model.js`
+- **Service:** `driver.service.js`
+- **Routes:** `driver.routes.js`
+
+
+
+
