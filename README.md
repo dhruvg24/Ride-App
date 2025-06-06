@@ -270,7 +270,6 @@ This endpoint is used to log out the authenticated user. It clears the authentic
 - **Service:** `user.service.js`
 - **Routes:** `user.routes.js`
 
-
 # API Documentation
 
 ## Driver Endpoints
@@ -292,30 +291,19 @@ The request body must be sent in JSON format and include the following fields:
 
 ##### Required Fields:
 
-- **fullname.firstname**: (String) First name of the driver. Must be at least 3 characters long.
-- **fullname.lastname**: (String) Last name of the driver. Optional but must be at least 3 characters long if provided.
-- **email**: (String) Email address of the driver. Must be a valid email format.
-- **password**: (String) Password for the driver account. Must be at least 6 characters long.
-- **vehicle.color**: (String) Color of the vehicle. Must be at least 3 characters long.
-- **vehicle.plateNum**: (String) Vehicle plate number. Must match the format `[A-Z]{2}\s?[0-9]{1,2}\s?[A-Z]{1,3}\s?[0-9]{1,4}`.
-- **vehicle.capacity**: (Number) Capacity of the vehicle. Must be at least 1.
-- **vehicle.vehicleType**: (String) Type of the vehicle. Must be one of `car`, `bike`, `scooty`, or `auto`.
-
-##### Example Request Body:
-
 ```json
 {
   "fullname": {
-    "firstname": "Jane",
-    "lastname": "Doe"
+    "firstname": "Jane", // String: Must be at least 3 characters long
+    "lastname": "Doe" // String: Optional, but must be at least 3 characters long if provided
   },
-  "email": "jane.doe@example.com",
-  "password": "securepassword123",
+  "email": "jane.doe@example.com", // String: Must be a valid email format
+  "password": "securepassword123", // String: Must be at least 6 characters long
   "vehicle": {
-    "color": "Red",
-    "plateNum": "MH 12 AB 1234",
-    "capacity": 4,
-    "vehicleType": "car"
+    "color": "Red", // String: Must be at least 3 characters long
+    "plateNum": "MH 12 AB 1234", // String: Must match the format [A-Z]{2}\s?[0-9]{1,2}\s?[A-Z]{1,3}\s?[0-9]{1,4}
+    "capacity": 4, // Number: Must be at least 1
+    "vehicleType": "car" // String: Must be one of "car", "bike", "scooty", "auto"
   }
 }
 ```
@@ -324,23 +312,21 @@ The request body must be sent in JSON format and include the following fields:
 
 ##### Success Response:
 
-- **Status Code:** `201 Created`
-- **Body:**
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...", // String: Authentication token
   "driver": {
-    "_id": "60d21b4667d0d8992e610c85",
+    "_id": "60d21b4667d0d8992e610c85", // String: Unique identifier for the driver
     "fullname": {
-      "firstname": "Jane",
-      "lastname": "Doe"
+      "firstname": "Jane", // String: First name of the driver
+      "lastname": "Doe" // String: Last name of the driver
     },
-    "email": "jane.doe@example.com",
+    "email": "jane.doe@example.com", // String: Email address of the driver
     "vehicle": {
-      "color": "Red",
-      "plateNum": "MH 12 AB 1234",
-      "capacity": 4,
-      "vehicleType": "car"
+      "color": "Red", // String: Color of the vehicle
+      "plateNum": "MH 12 AB 1234", // String: Vehicle plate number
+      "capacity": 4, // Number: Capacity of the vehicle
+      "vehicleType": "car" // String: Type of the vehicle
     }
   }
 }
@@ -349,31 +335,193 @@ The request body must be sent in JSON format and include the following fields:
 ##### Error Responses:
 
 1. **Validation Errors:**
-   - **Status Code:** `400 Bad Request`
-   - **Body:**
    ```json
    {
      "errors": [
        {
-         "msg": "First name should be at least 3 characters long",
-         "param": "fullname.firstname",
-         "location": "body"
+         "msg": "First name should be at least 3 characters long", // Error message
+         "param": "fullname.firstname", // Field causing the error
+         "location": "body" // Location of the error
        },
        {
-         "msg": "Please enter a valid vehicle plate number",
-         "param": "vehicle.plateNum",
-         "location": "body"
+         "msg": "Please enter a valid vehicle plate number", // Error message
+         "param": "vehicle.plateNum", // Field causing the error
+         "location": "body" // Location of the error
        }
      ]
    }
    ```
 
 2. **Driver Already Exists:**
-   - **Status Code:** `400 Bad Request`
-   - **Body:**
    ```json
    {
-     "error": "Driver with this email already exists"
+     "error": "Driver with this email already exists" // Error message
+   }
+   ```
+
+---
+
+### 2. `/drivers/login-driver`
+
+#### Description
+
+This endpoint is used to authenticate an existing driver. It validates the provided email and password, checks if the credentials match, and returns an authentication token along with the driver details.
+
+#### Endpoint
+
+**URL:** `/drivers/login-driver`  
+**Method:** `POST`
+
+#### Request Body
+
+```json
+{
+  "email": "jane.doe@example.com", // String: Must be a valid email format
+  "password": "securepassword123" // String: Must be at least 6 characters long
+}
+```
+
+#### Response
+
+##### Success Response:
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...", // String: Authentication token
+  "driver": {
+    "_id": "60d21b4667d0d8992e610c85", // String: Unique identifier for the driver
+    "fullname": {
+      "firstname": "Jane", // String: First name of the driver
+      "lastname": "Doe" // String: Last name of the driver
+    },
+    "email": "jane.doe@example.com", // String: Email address of the driver
+    "vehicle": {
+      "color": "Red", // String: Color of the vehicle
+      "plateNum": "MH 12 AB 1234", // String: Vehicle plate number
+      "capacity": 4, // Number: Capacity of the vehicle
+      "vehicleType": "car" // String: Type of the vehicle
+    }
+  }
+}
+```
+
+##### Error Responses:
+
+1. **Invalid Credentials:**
+   ```json
+   {
+     "error": "Invalid email or password" // Error message
+   }
+   ```
+
+2. **Validation Errors:**
+   ```json
+   {
+     "errors": [
+       {
+         "msg": "Invalid email address", // Error message
+         "param": "email", // Field causing the error
+         "location": "body" // Location of the error
+       },
+       {
+         "msg": "Password must be at least 6 characters long", // Error message
+         "param": "password", // Field causing the error
+         "location": "body" // Location of the error
+       }
+     ]
+   }
+   ```
+
+---
+
+### 3. `/drivers/profile`
+
+#### Description
+
+This endpoint is used to retrieve the profile information of the authenticated driver. The driver must be logged in and provide a valid authentication token.
+
+#### Endpoint
+
+**URL:** `/drivers/profile`  
+**Method:** `GET`
+
+#### Headers
+
+```json
+{
+  "Authorization": "Bearer <token>" // String: Authentication token
+}
+```
+
+#### Response
+
+##### Success Response:
+
+```json
+{
+  "driver": {
+    "_id": "60d21b4667d0d8992e610c85", // String: Unique identifier for the driver
+    "fullname": {
+      "firstname": "Jane", // String: First name of the driver
+      "lastname": "Doe" // String: Last name of the driver
+    },
+    "email": "jane.doe@example.com", // String: Email address of the driver
+    "vehicle": {
+      "color": "Red", // String: Color of the vehicle
+      "plateNum": "MH 12 AB 1234", // String: Vehicle plate number
+      "capacity": 4, // Number: Capacity of the vehicle
+      "vehicleType": "car" // String: Type of the vehicle
+    }
+  }
+}
+```
+
+##### Error Responses:
+
+1. **Unauthorized Access:**
+   ```json
+   {
+     "error": "Authentication required" // Error message
+   }
+   ```
+
+---
+
+### 4. `/drivers/logout`
+
+#### Description
+
+This endpoint is used to log out the authenticated driver. It clears the authentication token from cookies and adds the token to a blacklist to prevent reuse.
+
+#### Endpoint
+
+**URL:** `/drivers/logout`  
+**Method:** `GET`
+
+#### Headers
+
+```json
+{
+  "Authorization": "Bearer <token>" // String: Authentication token
+}
+```
+
+#### Response
+
+##### Success Response:
+
+```json
+{
+  "message": "Logged out successfully" // Success message
+}
+```
+
+##### Error Responses:
+
+1. **Unauthorized Access:**
+   ```json
+   {
+     "error": "Authentication required" // Error message
    }
    ```
 
@@ -391,7 +539,3 @@ The request body must be sent in JSON format and include the following fields:
 - **Model:** `driver.model.js`
 - **Service:** `driver.service.js`
 - **Routes:** `driver.routes.js`
-
-
-
-
