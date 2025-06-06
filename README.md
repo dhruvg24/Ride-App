@@ -172,11 +172,96 @@ The request body must be sent in JSON format and include the following fields:
 
 ---
 
+### 3. `/users/profile`
+
+#### Description
+
+This endpoint is used to retrieve the profile information of the authenticated user. The user must be logged in and provide a valid authentication token.
+
+#### Endpoint
+
+**URL:** `/users/profile`  
+**Method:** `GET`
+
+#### Headers
+
+- **Authorization**: Bearer `<token>`
+
+#### Response
+
+##### Success Response:
+
+- **Status Code:** `200 OK`
+- **Body:**
+```json
+{
+  "_id": "60d21b4667d0d8992e610c85",
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
+  },
+  "email": "john.doe@example.com"
+}
+```
+
+##### Error Responses:
+
+1. **Unauthorized Access:**
+   - **Status Code:** `401 Unauthorized`
+   - **Body:**
+   ```json
+   {
+     "message": "Authentication required"
+   }
+   ```
+
+---
+
+### 4. `/users/logout`
+
+#### Description
+
+This endpoint is used to log out the authenticated user. It clears the authentication token from cookies and adds the token to a blacklist to prevent reuse.
+
+#### Endpoint
+
+**URL:** `/users/logout`  
+**Method:** `GET`
+
+#### Headers
+
+- **Authorization**: Bearer `<token>`
+
+#### Response
+
+##### Success Response:
+
+- **Status Code:** `200 OK`
+- **Body:**
+```json
+{
+  "message": "Logged out successfully"
+}
+```
+
+##### Error Responses:
+
+1. **Unauthorized Access:**
+   - **Status Code:** `401 Unauthorized`
+   - **Body:**
+   ```json
+   {
+     "message": "Authentication required"
+   }
+   ```
+
+---
+
 ## Notes
 
 - Passwords are hashed before being stored in the database for security purposes.
-- Both endpoints use `express-validator` for input validation.
-- Ensure the `Authorization` header is included in subsequent requests using the token provided in the response.
+- All endpoints use `express-validator` for input validation where applicable.
+- Ensure the `Authorization` header is included in requests requiring authentication.
 
 ## Related Files
 
