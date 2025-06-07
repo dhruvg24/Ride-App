@@ -1,11 +1,12 @@
 import React, { useContext } from "react";
-import Home from "./pages/Home";
 import { Route, Routes } from "react-router-dom";
 import UserLogin from "./pages/UserLogin";
 import UserSignup from "./pages/UserSignup";
 import DriverLogin from "./pages/DriverLogin";
 import DriverSignup from "./pages/DriverSignup";
 import { UserContextData } from "./context/UserContext";
+import Start from "./pages/Start";
+import Home from "./pages/Home";
 
 const App = () => {
 
@@ -13,7 +14,9 @@ const App = () => {
   return (
     <div>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Start />} />
+
+        <Route path="/home" element={<Home />} />
 
         <Route path="/login-user" element={<UserLogin />} />
 
