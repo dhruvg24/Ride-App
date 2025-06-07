@@ -8,7 +8,7 @@ const Home = () => {
         <img className='w-16 ml-8' src='/src/assets/Logo.png' alt='logo'></img>
         <div className="bg-white pb-7 py-4 px-4">
           <h2 className="text-3xl font-bold">Get ready to book your ride with ease!</h2>
-          <Link to='/login-user' className="flex items-center justify-center w-full bg-blue-500 text-white py-3 rounded mt-5">Continue</Link>
+          <Link to='/login-user' className="flex items-center justify-center w-full bg-blue-500 text-white py-3 rounded-lg mt-5">Continue</Link>
         </div>
       </div>
     </div>

@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import Home from "./pages/Home";
 import { Route, Routes } from "react-router-dom";
 import UserLogin from "./pages/UserLogin";
 import UserSignup from "./pages/UserSignup";
 import DriverLogin from "./pages/DriverLogin";
 import DriverSignup from "./pages/DriverSignup";
+import { UserContextData } from "./context/UserContext";
 
 const App = () => {
+
+
   return (
     <div>
       <Routes>
