@@ -1,18 +1,38 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Link } from "react-router-dom";
 // import UserSignup from "./UserSignup";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { DriverContextData } from "../context/DriverContext";
+
 const DriverLogin = () => {
   // 2 way binding
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [captainData, setCaptainData] = useState({});
+  // const [captainData, setCaptainData] = useState({});
 
-  const submitHandler = (e) => {
+  const { driver, setDriver } = useContext(DriverContextData);
+  const navigate = useNavigate();
+
+  const submitHandler = async (e) => {
     e.preventDefault();
-    setCaptainData({
+    const driver = {
       email: email,
       password: password,
-    });
+    };
+
+    const response = await axios.post(
+      `${import.meta.env.VITE_BASE_URL}/drivers/login-driver`,
+      driver
+    );
+
+    if (response.status === 200) {
+      const data = response.data;
+      setDriver(data.driver);
+      localStorage.setItem("token", data.token);
+      // if the driver refreshes the login page, the context data will get lost, so we give the token to the context.
+      navigate("/driver-home");
+    }
     setEmail("");
     setPassword("");
     // This will reset/clear the email and password.

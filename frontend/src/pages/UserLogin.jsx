@@ -1,18 +1,40 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-// import UserSignup from "./UserSignup";
+import { UserContextData } from "../context/UserContext";
+import { useNavigate } from "react-router-dom";
+import axios from 'axios';
+
 const UserLogin = () => {
   // 2 way binding
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [userData, setUserData] = useState({});
 
-  const submitHandler = (e) => {
+
+  const { user, setUser } = React.useContext(UserContextData);
+
+  const navigate = useNavigate();
+
+
+  const submitHandler = async(e) => {
     e.preventDefault();
-    setUserData({
+    
+    const userData = {
       email: email,
       password: password,
-    });
+    }
+
+    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login-user`, userData);
+
+    if(response.status===200){
+      const data = response.data;
+      setUser(data.user);
+      // if the user refreshes the login page, the context data will get lost, so we give the token to the context.
+      localStorage.setItem("token", data.token);
+      navigate('/home');
+      // This will redirect the user to the home page after successful login.
+    }
+
     setEmail("");
     setPassword("");
     // This will reset/clear the email and password.

@@ -31,6 +31,8 @@ const UserSignup = () => {
     if(response.status === 201) {
       const data = response.data;
       setUser(data.user);
+      localStorage.setItem("token", data.token);
+      // if the user refreshes the signup page, the context data will get lost, so we give the token to the context.
       navigate('/home');
     }
 
