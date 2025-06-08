@@ -1,47 +1,120 @@
 import React, { useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import 'remixicon/fonts/remixicon.css'
+import "remixicon/fonts/remixicon.css";
 import LocationSearchPanel from "../components/LocationSearchPanel";
+import VehiclePanel from "../components/VehiclePanel";
+import ConfirmedRide from "../components/ConfirmedRide";
+// import WaitingForDriver from "../components/WaitingForDriver";
+import LookingForDriver from "../components/LookingForDriver";
+import WaitingForDriver from "../components/WaitingForDriver";
 
 const Home = () => {
   const [pickup, setPickup] = useState("");
   const [destination, setDestination] = useState("");
   const [panelOpen, setPanelOpen] = useState(false);
+  const vehiclePanelRef = useRef(null);
+  const confirmRidePanelRef = useRef(null);
+  const vehicleFoundRef = useRef(null);
+  const waitingForDriverRef = useRef(null);
   const panelRef = useRef(null);
-  const panelCloseRef= useRef(null);
-
+  const panelCloseRef = useRef(null);
+  const [vehicleListPanelOpen, setVehicleListPanelOpen] = useState(false);
+  const [confirmRidePanel, setConfirmRidePanel] = useState(false);
+  const [vehicleFound, setVehicleFound] = useState(false);
+  const [waitingForDriver, setWaitingForDriver] = useState(false);
 
   const submitHandler = (e) => {
     e.preventDefault();
   };
 
-  useGSAP(function () {
-    if (panelOpen) {
-      gsap.to(panelRef.current, {
-        height: "70%",
-        padding: 24
-        // opacity: 1
-      });
-      gsap.to(panelCloseRef.current, {
-        opacity: 1
-      })
-    } else {
-      gsap.to(panelRef.current, {
-        height: "0%",
-        padding : 0
-        // opacity: 0 
-      });
-      gsap.to(panelCloseRef.current, {
-        opacity: 0
-      })
+  useGSAP(
+    function () {
+      if (panelOpen) {
+        gsap.to(panelRef.current, {
+          height: "70%",
+          padding: 24,
+          // opacity: 1
+        });
+        gsap.to(panelCloseRef.current, {
+          opacity: 1,
+        });
+      } else {
+        gsap.to(panelRef.current, {
+          height: "0%",
+          padding: 0,
+          // opacity: 0
+        });
+        gsap.to(panelCloseRef.current, {
+          opacity: 0,
+        });
+      }
+    },
+    [panelOpen]
+  );
 
-    }
-  }, [panelOpen]);
+  useGSAP(
+    function () {
+      if (vehicleListPanelOpen) {
+        gsap.to(vehiclePanelRef.current, {
+          transform: "translateY(0)",
+        });
+      } else {
+        gsap.to(vehiclePanelRef.current, {
+          transform: "translateY(100%)",
+        });
+      }
+    },
+    [vehicleListPanelOpen]
+  );
+
+  useGSAP(
+    function () {
+      if (confirmRidePanel) {
+        gsap.to(confirmRidePanelRef.current, {
+          transform: "translateY(0)",
+        });
+      } else {
+        gsap.to(confirmRidePanelRef.current, {
+          transform: "translateY(100%)",
+        });
+      }
+    },
+    [confirmRidePanel]
+  );
+  useGSAP(
+    function () {
+      if (vehicleFound) {
+        gsap.to(vehicleFoundRef.current, {
+          transform: "translateY(0)",
+        });
+      } else {
+        gsap.to(vehicleFoundRef.current, {
+          transform: "translateY(100%)",
+        });
+      }
+    },
+    [vehicleFound]
+  );
+
+  useGSAP(
+    function () {
+      if (waitingForDriver) {
+        gsap.to(waitingForDriverRef.current, {
+          transform: "translateY(0)",
+        });
+      } else {
+        gsap.to(waitingForDriverRef.current, {
+          transform: "translateY(100%)",
+        });
+      }
+    },
+    [waitingForDriver]
+  );
 
   return (
     <>
-      <div className="h-screen relative">
+      <div className="h-screen relative overflow-hidden">
         <img
           className="w-18 absolute left-4 top-4"
           src="/src/assets/Logo.png"
@@ -59,9 +132,13 @@ const Home = () => {
         {/* The below logic is for moving the section up/down of finding a trip, when a user input some data this div should move to the top else remain downwards*/}
         <div className=" flex flex-col justify-end h-screen absolute  w-full top-0">
           <div className="h-[30%] p-6 bg-white relative">
-            <h5 ref={panelCloseRef} onClick={()=>{
-              setPanelOpen(false)
-              }} className="absolute top-6 right-6 opacity-0 text-2xl">
+            <h5
+              ref={panelCloseRef}
+              onClick={() => {
+                setPanelOpen(false);
+              }}
+              className="absolute top-6 right-6 opacity-0 text-2xl"
+            >
               <i className="ri-arrow-down-wide-line"></i>
             </h5>
             <h4 className="text-2xl font-semibold">Find a trip</h4>
@@ -96,8 +173,48 @@ const Home = () => {
 
           <div ref={panelRef} className="bg-white h-0">
             {/* to enable set h-[70%] */}
-            {<LocationSearchPanel />}
+            {panelOpen && (
+              <LocationSearchPanel
+                setVehicleListPanelOpen={setVehicleListPanelOpen}
+                setPanelOpen={setPanelOpen}
+              />
+            )}
           </div>
+        </div>
+
+        <div
+          ref={vehiclePanelRef}
+          className="fixed w-full translate-y-full z-10 bottom-0 bg-white px-3 py-10 pt-12"
+        >
+          <VehiclePanel
+            setVehicleListPanelOpen={setVehicleListPanelOpen}
+            setConfirmRidePanel={setConfirmRidePanel}
+          />
+        </div>
+
+        <div
+          ref={confirmRidePanelRef}
+          className="fixed w-full translate-y-full z-10 bottom-0 bg-white px-3 py-6 pt-12"
+        >
+          <ConfirmedRide
+            setConfirmRidePanel={setConfirmRidePanel}
+            setVehicleFound={setVehicleFound}
+          />
+        </div>
+
+        <div
+          ref={vehicleFoundRef}
+          className="fixed w-full translate-y-full z-10 bottom-0 bg-white px-3 py-6 pt-12"
+        >
+          <LookingForDriver setVehicleFound={setVehicleFound} />
+        </div>
+
+        <div
+          ref={waitingForDriverRef}
+          className="fixed w-full  z-10 bottom-0 bg-white px-3 py-6 pt-12"
+        >
+          {/*  translate-y-full */}
+          <WaitingForDriver waitingForDriver={waitingForDriver} />
         </div>
       </div>
     </>
