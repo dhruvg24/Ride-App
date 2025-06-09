@@ -13,6 +13,8 @@ import DriverHome from "./pages/DriverHome";
 import DriverProtectWrapper from "./pages/DriverProtectWrapper";
 import DriverLogout from "./pages/DriverLogout";
 import Riding from "./pages/Riding";
+import DriverRiding from "./pages/DriverRiding";
+import 'remixicon/fonts/remixicon.css'
 
 const App = () => {
   return (
@@ -38,6 +40,11 @@ const App = () => {
         <Route path="/login-user" element={<UserLogin />} />
 
         <Route path='/riding' element = {<Riding />} />
+        {/* user riding */}
+
+        <Route path='/driver-riding' element={
+          <DriverRiding />
+        } />
 
         <Route path="/register-user" element={<UserSignup />} />
 
