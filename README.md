@@ -524,18 +524,354 @@ This endpoint is used to log out the authenticated driver. It clears the authent
      "error": "Authentication required" // Error message
    }
    ```
+# API Documentation
+
+## Maps Endpoints
+
+### 1. `/maps/get-coordinates`
+
+#### Description
+
+This endpoint retrieves the latitude and longitude coordinates for a given address.
+
+#### Endpoint
+
+**URL:** `/maps/get-coordinates`  
+**Method:** `GET`
+
+#### Query Parameters
+
+- **address**: (String) The address for which coordinates are required. Must be at least 3 characters long.
+
+#### Headers
+
+- **Authorization**: Bearer `<token>`
+
+#### Response
+
+##### Success Response:
+
+- **Status Code:** `200 OK`
+- **Body:**
+```json
+{
+  "lat": 23.0225,
+  "lng": 72.5714
+}
+```
+
+##### Error Responses:
+
+1. **Validation Errors:**
+   - **Status Code:** `400 Bad Request`
+   - **Body:**
+   ```json
+   {
+     "errors": [
+       {
+         "msg": "Invalid address",
+         "param": "address",
+         "location": "query"
+       }
+     ]
+   }
+   ```
+
+2. **Coordinates Not Found:**
+   - **Status Code:** `404 Not Found`
+   - **Body:**
+   ```json
+   {
+     "message": "Coordinates not found!"
+   }
+   ```
+
+---
+
+### 2. `/maps/get-distance-time`
+
+#### Description
+
+This endpoint calculates the distance and estimated travel time between two locations.
+
+#### Endpoint
+
+**URL:** `/maps/get-distance-time`  
+**Method:** `GET`
+
+#### Query Parameters
+
+- **origin**: (String) The starting location. Must be at least 3 characters long.
+- **destination**: (String) The destination location. Must be at least 3 characters long.
+
+#### Headers
+
+- **Authorization**: Bearer `<token>`
+
+#### Response
+
+##### Success Response:
+
+- **Status Code:** `200 OK`
+- **Body:**
+```json
+{
+  "distance": {
+    "text": "10.5 km",
+    "value": 10500
+  },
+  "duration": {
+    "text": "25 mins",
+    "value": 1500
+  }
+}
+```
+
+##### Error Responses:
+
+1. **Validation Errors:**
+   - **Status Code:** `400 Bad Request`
+   - **Body:**
+   ```json
+   {
+     "errors": [
+       {
+         "msg": "Invalid origin",
+         "param": "origin",
+         "location": "query"
+       },
+       {
+         "msg": "Invalid destination",
+         "param": "destination",
+         "location": "query"
+       }
+     ]
+   }
+   ```
+
+2. **No Routes Found:**
+   - **Status Code:** `404 Not Found`
+   - **Body:**
+   ```json
+   {
+     "message": "No routes found!"
+   }
+   ```
+
+---
+
+### 3. `/maps/get-address-suggestions`
+
+#### Description
+
+This endpoint provides autocomplete suggestions for addresses based on user input.
+
+#### Endpoint
+
+**URL:** `/maps/get-address-suggestions`  
+**Method:** `GET`
+
+#### Query Parameters
+
+- **input**: (String) The partial address input for suggestions. Must be at least 3 characters long.
+
+#### Headers
+
+- **Authorization**: Bearer `<token>`
+
+#### Response
+
+##### Success Response:
+
+- **Status Code:** `200 OK`
+- **Body:**
+```json
+[
+  {
+    "description": "123 Main Street, Ahmedabad, India"
+  },
+  {
+    "description": "456 Elm Street, Ahmedabad, India"
+  }
+]
+```
+
+##### Error Responses:
+
+1. **Validation Errors:**
+   - **Status Code:** `400 Bad Request`
+   - **Body:**
+   ```json
+   {
+     "errors": [
+       {
+         "msg": "Invalid input",
+         "param": "input",
+         "location": "query"
+       }
+     ]
+   }
+   ```
+
+---
+
+## Rides Endpoints
+
+### 1. `/rides/create-ride`
+
+#### Description
+
+This endpoint creates a new ride request for a user.
+
+#### Endpoint
+
+**URL:** `/rides/create-ride`  
+**Method:** `POST`
+
+#### Request Body
+
+The request body must be sent in JSON format and include the following fields:
+
+##### Required Fields:
+
+- **pickup**: (String) The pickup location. Must be at least 3 characters long.
+- **destination**: (String) The destination location. Must be at least 3 characters long.
+- **vehicleType**: (String) The type of vehicle requested. Must be one of `auto`, `car`, or `bike`.
+
+#### Headers
+
+- **Authorization**: Bearer `<token>`
+
+#### Response
+
+##### Success Response:
+
+- **Status Code:** `201 Created`
+- **Body:**
+```json
+{
+  "_id": "60d21b4667d0d8992e610c85",
+  "user": "60d21b4667d0d8992e610c84",
+  "pickup": "123 Main Street, Ahmedabad, India",
+  "destination": "456 Elm Street, Ahmedabad, India",
+  "fare": 190.20,
+  "status": "pending",
+  "otp": "12345"
+}
+```
+
+##### Error Responses:
+
+1. **Validation Errors:**
+   - **Status Code:** `400 Bad Request`
+   - **Body:**
+   ```json
+   {
+     "errors": [
+       {
+         "msg": "Invalid pickup address",
+         "param": "pickup",
+         "location": "body"
+       },
+       {
+         "msg": "Invalid destination address",
+         "param": "destination",
+         "location": "body"
+       },
+       {
+         "msg": "Invalid vehicle type",
+         "param": "vehicleType",
+         "location": "body"
+       }
+     ]
+   }
+   ```
+
+2. **Missing Fields:**
+   - **Status Code:** `400 Bad Request`
+   - **Body:**
+   ```json
+   {
+     "message": "All fields are required"
+   }
+   ```
+
+---
+
+### 2. `/rides/get-fare`
+
+#### Description
+
+This endpoint calculates the fare for a ride based on the pickup and destination locations.
+
+#### Endpoint
+
+**URL:** `/rides/get-fare`  
+**Method:** `GET`
+
+#### Query Parameters
+
+- **pickup**: (String) The pickup location. Must be at least 3 characters long.
+- **destination**: (String) The destination location. Must be at least 3 characters long.
+
+#### Headers
+
+- **Authorization**: Bearer `<token>`
+
+#### Response
+
+##### Success Response:
+
+- **Status Code:** `200 OK`
+- **Body:**
+```json
+{
+  "auto": 120.66,
+  "car": 220.66,
+  "bike": 90.66
+}
+```
+
+##### Error Responses:
+
+1. **Validation Errors:**
+   - **Status Code:** `400 Bad Request`
+   - **Body:**
+   ```json
+   {
+     "errors": [
+       {
+         "msg": "Invalid pickup location",
+         "param": "pickup",
+         "location": "query"
+       },
+       {
+         "msg": "Invalid destination location",
+         "param": "destination",
+         "location": "query"
+       }
+     ]
+   }
+   ```
+
+2. **Missing Fields:**
+   - **Status Code:** `400 Bad Request`
+   - **Body:**
+   ```json
+   {
+     "message": "pickup and destination required"
+   }
+   ```
 
 ---
 
 ## Notes
 
-- Passwords are hashed before being stored in the database for security purposes.
 - All endpoints use `express-validator` for input validation where applicable.
 - Ensure the `Authorization` header is included in requests requiring authentication.
 
 ## Related Files
 
-- **Controller:** `driver.controller.js`
-- **Model:** `driver.model.js`
-- **Service:** `driver.service.js`
-- **Routes:** `driver.routes.js`
+- **Controller:** `map.controller.js`, `ride.controller.js`
+- **Service:** `map.service.js`, `ride.service.js`
+- **Routes:** `map.routes.js`, `ride.routes.js`

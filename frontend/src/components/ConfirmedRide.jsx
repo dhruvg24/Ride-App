@@ -5,7 +5,7 @@ const ConfirmedRide = (props) => {
     <div>
       <h5
         className="p-2 text-center w-[94%] absolute top-0"
-        onClick={() => props.setVehicleListPanelOpen(false)}
+        onClick={() => props.setConfirmRidePanel(false)}
       >
         <i className=" text-3xl text-gray-400 ri-arrow-down-wide-line"></i>
       </h5>
@@ -48,7 +48,7 @@ const ConfirmedRide = (props) => {
           onClick={() => {
             props.setVehicleFound(true), props.setConfirmRidePanel(false);
           }}
-          className="mt-5 w-full bg-green-600 font-semibold text-white rounded-lg"
+          className="mt-5 w-full bg-green-600 p-2 font-semibold text-white rounded-lg"
         >
           Confirm
         </button>

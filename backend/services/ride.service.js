@@ -2,7 +2,7 @@ const rideModel = require("../models/ride.model");
 const mapService = require("./map.service");
 const crypto = require("node:crypto");
 
-async function getFare(pickup, destination) {
+module.exports.getFare = async (pickup, destination)=>{
   if (!pickup || !destination) {
     throw new Error("pickup and destination required");
   }
@@ -34,19 +34,19 @@ async function getFare(pickup, destination) {
 
   const fareCalculation = {
     auto:
-      baseFare.auto +
+      Math.round(baseFare.auto +
       (distanceTime.distance.value / 1000) * perKmRate.auto +
-      (perMinuteRate.auto * distanceTime.duration.value) / 60,
+      (perMinuteRate.auto * distanceTime.duration.value) / 60),
 
     car:
-      baseFare.auto +
+      Math.round(baseFare.auto +
       (distanceTime.distance.value / 1000) * perKmRate.car +
-      (perMinuteRate.car * distanceTime.duration.value) / 60,
+      (perMinuteRate.car * distanceTime.duration.value) / 60),
 
     bike:
-      baseFare.bike +
+      Math.round(baseFare.bike +
       (distanceTime.distance.value / 1000) * perKmRate.bike +
-      (perMinuteRate.bike * distanceTime.duration.value) / 60,
+      (perMinuteRate.bike * distanceTime.duration.value) / 60),
   };
   //   console.log(fareCalculation);
   return fareCalculation;
