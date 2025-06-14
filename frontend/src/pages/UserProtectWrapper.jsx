@@ -23,7 +23,10 @@ const UserProtectWrapper = ({ children }) => {
       })
       .then((response) => {
         if (response.status === 200) {
-          setUser(response.data.user);
+          // console.log(response.data);
+          setUser(response.data);
+          // not to use response.data.user -> will only create a context for nested object -> name, email, id and not token, socketId etc.
+
           setIsLoading(false); // Set loading to false after fetching user data
         }
       })

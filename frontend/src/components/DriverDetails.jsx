@@ -1,6 +1,9 @@
-import React from "react";
-
+import React, {useContext} from "react";
+import {DriverContextData} from '../context/DriverContext'
 const DriverDetails = () => {
+
+  const {driver} = useContext(DriverContextData)
+
   return (
     <div>
       <div className="flex items-center justify-between mb-5">
@@ -10,7 +13,7 @@ const DriverDetails = () => {
             src="https://media.istockphoto.com/id/1182697148/photo/elegant-and-handsome-driver-waiting.jpg?s=612x612&w=0&k=20&c=M9il-C5NggIGFlkLs7H3NBS9NqWwOWb_g80g5w1aptQ="
             alt="user-img"
           />
-          <h4 className="text-lg font-medium">John Doe</h4>
+          <h4 className="text-lg font-medium capitalize">{driver.fullname.firstname+ " "+ driver.fullname.lastname}</h4>
         </div>
         <div>
           <h4 className="text-xl font-semibold">Rs. 294.6</h4>

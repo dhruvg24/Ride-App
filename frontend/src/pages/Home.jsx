@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import axios from "axios";
 import gsap from "gsap";
@@ -8,6 +8,9 @@ import VehiclePanel from "../components/VehiclePanel";
 import ConfirmedRide from "../components/ConfirmedRide";
 import LookingForDriver from "../components/LookingForDriver";
 import WaitingForDriver from "../components/WaitingForDriver";
+
+import { SocketContext } from "../context/SocketContext";
+import { UserContextData } from "../context/UserContext";
 
 const Home = () => {
   const [pickup, setPickup] = useState("");
@@ -30,6 +33,20 @@ const Home = () => {
   const [fare, setFare] = useState({});
   const [vehicleType, setVehicleType] = useState(null);
 
+  const {socket} = useContext(SocketContext);
+
+  const {user} = useContext(UserContextData);
+
+  useEffect(()=>{
+    // refer socket.js in backend
+    // if(!user){return;}
+    // console.log(user);
+    // sendMessage('join', {userType: 'user', userId: user._id})
+
+
+    socket.emit('join' , {userType: 'user', userId: user._id})
+    // event name, message
+  }, [user])
 
   const submitHandler = (e) => {
     e.preventDefault();
