@@ -28,6 +28,8 @@ const Home = () => {
   const [destinationSuggestions, setDestinationSuggestions] = useState([]);
 
   const [fare, setFare] = useState({});
+  const [vehicleType, setVehicleType] = useState(null);
+
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -170,18 +172,44 @@ const Home = () => {
   );
 
   async function findTrip() {
-    setVehicleListPanelOpen(true);
-    setPanelOpen(false);
-    const res = await axios.get(
-      `${import.meta.env.VITE_BASE_URL}/rides/get-fare`,
-      {
-        params: { pickup, destination },
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+    try {
+      setVehicleListPanelOpen(true);
+      setPanelOpen(false);
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/rides/get-fare`,
+        {
+          params: { pickup, destination },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      setFare(res.data);
+    } catch (err) {
+      console.error("Failed to fetch fare", err);
+    }
+  }
+
+  async function createRide() {
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/rides/create-ride`,
+        {
+          pickup,
+          destination,
+          vehicleType,
         },
-      }
-    );
-    setFare(res.data);
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      console.log(res.data);
+    } catch (err) {
+      console.error("Failed to create ride", err);
+    }
   }
 
   return (
@@ -245,6 +273,7 @@ const Home = () => {
             </form>
 
             <button
+              disabled={!pickup || !destination}
               onClick={findTrip}
               className="bg-blue-600 text-white px-4 py-2 rounded-lg  mt-2 w-full"
             >
@@ -275,6 +304,7 @@ const Home = () => {
           className="fixed w-full translate-y-full z-10 bottom-0 bg-white px-3 py-10 pt-12"
         >
           <VehiclePanel
+            selectVehicle={setVehicleType}
             fare={fare}
             setVehicleListPanelOpen={setVehicleListPanelOpen}
             setConfirmRidePanel={setConfirmRidePanel}
@@ -285,7 +315,8 @@ const Home = () => {
           ref={confirmRidePanelRef}
           className="fixed w-full translate-y-full z-10 bottom-0 bg-white px-3 py-6 pt-12"
         >
-          <ConfirmedRide
+          <ConfirmedRide createRide={createRide} fare={fare} vehicleType={vehicleType}
+            pickup={pickup} destination = {destination}
             setConfirmRidePanel={setConfirmRidePanel}
             setVehicleFound={setVehicleFound}
           />
@@ -295,7 +326,8 @@ const Home = () => {
           ref={vehicleFoundRef}
           className="fixed w-full translate-y-full z-10 bottom-0 bg-white px-3 py-6 pt-12"
         >
-          <LookingForDriver setVehicleFound={setVehicleFound} />
+          <LookingForDriver createRide={createRide} fare={fare} vehicleType={vehicleType}
+            pickup={pickup} destination = {destination} setVehicleFound={setVehicleFound} />
         </div>
 
         <div

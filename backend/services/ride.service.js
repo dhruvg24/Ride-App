@@ -2,12 +2,16 @@ const rideModel = require("../models/ride.model");
 const mapService = require("./map.service");
 const crypto = require("node:crypto");
 
-module.exports.getFare = async (pickup, destination)=>{
+async function getFare(pickup, destination){
   if (!pickup || !destination) {
     throw new Error("pickup and destination required");
   }
 
   const distanceTime = await mapService.getDistanceTime(pickup, destination);
+
+  if(!distanceTime?.distance?.value ||!distanceTime?.duration?.value){
+    throw new Error('invalid distance or duration returned from mapService');
+  }
 
   // fare creation for all kinds of vehicle we have: auto, bike, car
 
@@ -39,7 +43,7 @@ module.exports.getFare = async (pickup, destination)=>{
       (perMinuteRate.auto * distanceTime.duration.value) / 60),
 
     car:
-      Math.round(baseFare.auto +
+      Math.round(baseFare.car +
       (distanceTime.distance.value / 1000) * perKmRate.car +
       (perMinuteRate.car * distanceTime.duration.value) / 60),
 
@@ -61,12 +65,12 @@ function getOTP(num) {
   return otp;
 }
 
-module.exports.createRide = async ({
+async function createRide ({
   user,
   pickup,
   destination,
   vehicleType,
-}) => {
+}) {
   // userId, pickup, destination, type of vehicle needed
   if (!user || !pickup || !destination || !vehicleType) {
     throw new Error("All fields are required");
@@ -84,3 +88,6 @@ module.exports.createRide = async ({
 
   return ride;
 };
+
+
+module.exports={createRide, getFare}

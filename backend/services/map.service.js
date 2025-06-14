@@ -48,7 +48,15 @@ module.exports.getDistanceTime = async (origin, destination) => {
       if (res.data.rows[0].elements[0].status === "ZERO_RESULTS") {
         throw new Error("No routes found!");
       }
-      return res.data.rows[0].elements[0];
+      const element = res.data.rows[0].elements[0];
+      if(!element.distance || !element.duration){
+        throw new Error('Distance or duration not found in response')
+      }
+
+      return {
+        distance: element.distance,
+        duration: element.duration
+      }
     } else {
       throw new Error("Unable to fetch distance and time");
     }
