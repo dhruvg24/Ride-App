@@ -118,7 +118,7 @@ async function confirmRide(rideId, driver) {
   return ride;
 }
 
-async function startRide({ rideId, otp, driver }) {
+async function startRide({ rideId, otp }) {
   if (!rideId || !otp) {
     throw new Error("Ride Id and OTP are required");
   }
@@ -157,4 +157,30 @@ async function startRide({ rideId, otp, driver }) {
 
   return ride;
 }
-module.exports = { createRide, getFare, confirmRide, startRide };
+
+async function finishRide({rideId, driver}){
+  if(!rideId){
+    throw new Error('ride id is required')
+  }
+
+  const ride = await rideModel.findOne({
+    _id: rideId, 
+    driver: driver._id
+    // need to verify that driver belongs to the particular ride.
+  }).populate('user').populate('driver').select('+otp')
+
+  if(!ride){
+    throw new Error('Ride not found')
+  }
+
+  if(ride.status !=='ongoing'){
+    throw new Error('Ride not ongoing')
+  }
+
+  await rideModel.findOneAndUpdate({
+    _id:rideId
+  }, {status: 'completed'})
+
+  return ride
+}
+module.exports = { createRide, getFare, confirmRide, startRide, finishRide };

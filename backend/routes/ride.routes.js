@@ -45,10 +45,22 @@ router.post(
 );
 
 router.get(
-  '/start-ride',
+  "/start-ride",
   authMiddleware.authDriver,
-  query('rideId').isMongoId().withMessage('Invalid ride Id'), 
-  query('otp').isString().isLength({min:5, max:5}).withMessage('Invalid OTP'), rideController.startRide
-)
+  query("rideId").isMongoId().withMessage("Invalid ride Id"),
+  query("otp")
+    .isString()
+    .isLength({ min: 5, max: 5 })
+    .withMessage("Invalid OTP"),
+  rideController.startRide
+);
+
+router.post(
+  "/finish-ride",
+  authMiddleware.authDriver,
+  body("rideId").isMongoId().withMessage("Invalid ride id"),
+  rideController.finishRide
+);
+
 
 module.exports = router;
