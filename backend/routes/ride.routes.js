@@ -6,7 +6,7 @@ const authMiddleware = require("../middlewares/auth.middleware");
 
 router.post(
   "/create-ride",
-    authMiddleware.authUser,
+  authMiddleware.authUser,
   body("pickup")
     .isString()
     .isLength({ min: 3 })
@@ -24,7 +24,24 @@ router.post(
 // needs user id, pickup loc, dest
 
 router.get(
-  '/get-fare', authMiddleware.authUser, query('pickup').isString().isLength({min: 3}).withMessage('Invalid pickup location'),query('destination').isString().isLength({min: 3}).withMessage('Invalid destination location'),rideController.getFare
-)
+  "/get-fare",
+  authMiddleware.authUser,
+  query("pickup")
+    .isString()
+    .isLength({ min: 3 })
+    .withMessage("Invalid pickup location"),
+  query("destination")
+    .isString()
+    .isLength({ min: 3 })
+    .withMessage("Invalid destination location"),
+  rideController.getFare
+);
+
+router.post(
+  "/confirm-ride",
+  authMiddleware.authDriver,
+  body("rideId").isMongoId().withMessage("Invalid Ride ID"),
+  rideController.confirmRide
+);
 
 module.exports = router;

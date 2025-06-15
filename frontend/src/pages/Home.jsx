@@ -33,6 +33,8 @@ const Home = () => {
   const [fare, setFare] = useState({});
   const [vehicleType, setVehicleType] = useState(null);
 
+  const [ride, setRide] = useState(null);
+
   const { socket } = useContext(SocketContext);
   // const { driver } = useContext(DriverContextData);
   const { user } = useContext(UserContextData);
@@ -40,12 +42,29 @@ const Home = () => {
   useEffect(() => {
     // refer socket.js in backend
     socket.emit("join", { userType: "user", userId: user._id });
-
   }, [user]);
 
   const submitHandler = (e) => {
     e.preventDefault();
   };
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleRideConfirmed = (ride) => {
+      console.log("Ride confirmed by driver: ", ride);
+      setVehicleFound(false);
+      setWaitingForDriver(true);
+      setRide(ride);
+    };
+
+    socket.on("ride-confirmed", handleRideConfirmed);
+
+    // cleanup listener when component unmounts or socket changes
+    return () => {
+      socket.off("ride-confirmed", handleRideConfirmed);
+    };
+  }, [socket]);
 
   const handlePickupChange = async (e) => {
     const val = e.target.value;
@@ -203,9 +222,9 @@ const Home = () => {
   }
 
   async function createRide() {
-    const token = localStorage.getItem('token');
-    if(!token){
-      console.error('No token found')
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No token found");
       return;
     }
     try {
@@ -362,7 +381,12 @@ const Home = () => {
           className="fixed w-full  z-10 bottom-0 bg-white px-3 py-6 pt-12"
         >
           {/*  translate-y-full */}
-          <WaitingForDriver waitingForDriver={waitingForDriver} />
+          <WaitingForDriver
+            ride={ride}
+            setVehicleFound={setVehicleFound}
+            setWaitingForDriver={setWaitingForDriver}
+            waitingForDriver={waitingForDriver}
+          />
         </div>
       </div>
     </>
