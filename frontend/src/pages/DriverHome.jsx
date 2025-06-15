@@ -77,7 +77,7 @@ const DriverHome = () => {
 
     const token = localStorage.getItem('token')
     if(!token){
-      console.error('TOken not found, Driver may not be auth.')
+      console.error('Token not found, Driver may not be auth.')
       return;
     }
     const res = await axios.post(
@@ -172,6 +172,7 @@ const DriverHome = () => {
         className="fixed w-full h-screen translate-y-full z-10 bottom-0 bg-white px-3 py-10 pt-12"
       >
         <ConfirmRidePopup
+          ride= {ride} 
           setConfirmRidePopupPanel={setConfirmRidePopupPanel}
           setRidePopupPanel={setRidePopupPanel}
         />
