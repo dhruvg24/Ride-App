@@ -20,14 +20,13 @@ function initializeSocket(server) {
         return;
       }
       const { userId, userType } = data;
-      console.log(`User ${userId} joined as ${userType}`)
+      console.log(`User ${userId} joined as ${userType}`);
 
       if (!userId || !userType) {
         console.warn("Missing userId or userType in 'join' event", data);
         return;
       }
       try {
-
         if (userType === "user") {
           await userModel.findByIdAndUpdate(userId, { socketId: socket.id });
         } else if (userType === "driver") {
@@ -40,15 +39,33 @@ function initializeSocket(server) {
       }
     });
 
+    socket.on("update-driver-location", async (data) => {
+      const { userId, location } = data;
+
+      // validation for location(must include latitude, longitude)
+      if (!location || !location.ltd || !location.lng) {
+        return socket.emit("error", { message: "Invalid location data" });
+      }
+
+      console.log(`User ${userId} updated to location ${location}`);
+      await driverModel.findByIdAndUpdate(userId, {
+        location: {
+          ltd: location.ltd,
+          lng: location.lng,
+        },
+      });
+    });
+
     socket.on("disconnect", () => {
       console.log(`Client disconnected: ${socket.id}`);
     });
   });
 }
 
-function sendMessageToSocketId(socketId, message) {
+function sendMessageToSocketId(socketId, messageObject) {
+  console.log(`Sending message to ${socketId}`, messageObject);
   if (io) {
-    io.to(socketId).emit("message", message);
+    io.to(socketId).emit(messageObject.event, messageObject.data);
   } else {
     console.log("socket.io not initialized");
   }

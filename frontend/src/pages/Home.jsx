@@ -33,20 +33,15 @@ const Home = () => {
   const [fare, setFare] = useState({});
   const [vehicleType, setVehicleType] = useState(null);
 
-  const {socket} = useContext(SocketContext);
+  const { socket } = useContext(SocketContext);
+  // const { driver } = useContext(DriverContextData);
+  const { user } = useContext(UserContextData);
 
-  const {user} = useContext(UserContextData);
-
-  useEffect(()=>{
+  useEffect(() => {
     // refer socket.js in backend
-    // if(!user){return;}
-    // console.log(user);
-    // sendMessage('join', {userType: 'user', userId: user._id})
+    socket.emit("join", { userType: "user", userId: user._id });
 
-
-    socket.emit('join' , {userType: 'user', userId: user._id})
-    // event name, message
-  }, [user])
+  }, [user]);
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -208,6 +203,11 @@ const Home = () => {
   }
 
   async function createRide() {
+    const token = localStorage.getItem('token');
+    if(!token){
+      console.error('No token found')
+      return;
+    }
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/rides/create-ride`,
@@ -332,8 +332,12 @@ const Home = () => {
           ref={confirmRidePanelRef}
           className="fixed w-full translate-y-full z-10 bottom-0 bg-white px-3 py-6 pt-12"
         >
-          <ConfirmedRide createRide={createRide} fare={fare} vehicleType={vehicleType}
-            pickup={pickup} destination = {destination}
+          <ConfirmedRide
+            createRide={createRide}
+            fare={fare}
+            vehicleType={vehicleType}
+            pickup={pickup}
+            destination={destination}
             setConfirmRidePanel={setConfirmRidePanel}
             setVehicleFound={setVehicleFound}
           />
@@ -343,8 +347,14 @@ const Home = () => {
           ref={vehicleFoundRef}
           className="fixed w-full translate-y-full z-10 bottom-0 bg-white px-3 py-6 pt-12"
         >
-          <LookingForDriver createRide={createRide} fare={fare} vehicleType={vehicleType}
-            pickup={pickup} destination = {destination} setVehicleFound={setVehicleFound} />
+          <LookingForDriver
+            createRide={createRide}
+            fare={fare}
+            vehicleType={vehicleType}
+            pickup={pickup}
+            destination={destination}
+            setVehicleFound={setVehicleFound}
+          />
         </div>
 
         <div

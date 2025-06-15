@@ -1,10 +1,12 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import DriverDetails from "../components/DriverDetails";
 import RidePopup from "../components/RidePopup";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import ConfirmRidePopup from "../components/ConfirmRidePopup";
+import { SocketContext } from "../context/SocketContext";
+import { DriverContextData } from "../context/DriverContext";
 
 const DriverHome = () => {
   const [ridePopupPanel, setRidePopupPanel] = useState(true);
@@ -12,6 +14,53 @@ const DriverHome = () => {
 
   const ridePopupPanelRef = useRef(null);
   const confirmRidePopupPanelRef = useRef(null);
+
+  const {socket} = useContext(SocketContext)
+  const {driver}= useContext(DriverContextData)
+
+  useEffect(()=>{
+    socket.emit('join',{
+      userId: driver._id, 
+      userType: 'driver'
+    })
+
+    const updateLocation = ()=>{
+      if(navigator.geolocation){
+        navigator.geolocation.getCurrentPosition(position=>{
+
+          // console.log({
+          //   userId: driver._id,
+          //   location : {
+          //     ltd: position.coords.latitude, 
+          //     lng: position.coords.longitude
+          //   }
+          // })
+          socket.emit('update-driver-location', {
+            userId: driver._id,
+            location : {
+              ltd: position.coords.latitude, 
+              lng: position.coords.longitude
+            }
+          })
+        })
+      }
+      
+    }
+    const locationInterval = setInterval(updateLocation, 4)
+    // after 10 seconds location is fetched.
+    updateLocation();
+    // return ()=>clearInterval(locationInterval)
+    // this is to avoid memory leakage when the component unmounts.
+  }, [])
+
+  // need to listen to the socket event i.e. new-ride (refer ride.controller)
+  socket.on('new-ride', (data)=>{
+    console.log(data)
+    setConfirmRidePopupPanel(true)
+    setRidePopupPanel(false)
+  })
+
+
 
   useGSAP(
     function () {
@@ -74,7 +123,10 @@ const DriverHome = () => {
         ref={ridePopupPanelRef}
         className="fixed w-full translate-y-full z-10 bottom-0 bg-white px-3 py-10 pt-12"
       >
-        <RidePopup setRidePopupPanel={setRidePopupPanel} setConfirmRidePopupPanel={setConfirmRidePopupPanel} />
+        <RidePopup
+          setRidePopupPanel={setRidePopupPanel}
+          setConfirmRidePopupPanel={setConfirmRidePopupPanel}
+        />
       </div>
 
       <div

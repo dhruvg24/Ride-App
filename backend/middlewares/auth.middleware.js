@@ -19,7 +19,13 @@ module.exports.authUser=async(req, res, next)=>{
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         // verify the token using jwt
+        
+
         const user = await userModel.findById(decoded._id);
+        console.log('Found user: ', user);
+        if(!user){
+            return res.status(401).json({message: 'User not found'})
+        }
 
         req.user = user; // attach user to request object            
         return next(); // call next middleware
