@@ -12,6 +12,7 @@ import WaitingForDriver from "../components/WaitingForDriver";
 import { SocketContext } from "../context/SocketContext";
 import { UserContextData } from "../context/UserContext";
 import { Navigate, useNavigate } from "react-router-dom";
+import LiveLocationTracking from "../components/LiveLocationTracking";
 
 const Home = () => {
   const [pickup, setPickup] = useState("");
@@ -266,11 +267,7 @@ const Home = () => {
         />
 
         <div className="h-screen w-screen">
-          <img
-            className="h-full w-full object-cover"
-            src="https://miro.medium.com/v2/resize:fit:1200/1*hpuwAa_brbyYGZusWhzuIQ.gif"
-            alt="maps-image"
-          />
+          <LiveLocationTracking />
         </div>
 
         {/* The below logic is for moving the section up/down of finding a trip, when a user input some data this div should move to the top else remain downwards*/}

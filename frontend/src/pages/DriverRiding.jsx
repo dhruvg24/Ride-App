@@ -3,6 +3,7 @@ import gsap from "gsap";
 import React, { useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import FinishRide from "../components/FinishRide";
+import LiveLocationTracking from "../components/LiveLocationTracking";
 
 const DriverRiding = () => {
 
@@ -30,7 +31,7 @@ const DriverRiding = () => {
     [finishRidePanel]
   );
   return (
-    <div className="h-screen relative">
+    <div className="h-screen relative flex flex-col justify-end">
       <div className="fixed p-6 top-0 flex items-center justify-between w-screen">
         <img
           className="w-16"
@@ -45,13 +46,7 @@ const DriverRiding = () => {
         </Link>
       </div>
 
-      <div className="h-4/5">
-        <img
-          className="h-full w-full object-cover"
-          src="https://miro.medium.com/v2/resize:fit:1200/1*hpuwAa_brbyYGZusWhzuIQ.gif"
-          alt="maps-image"
-        ></img>
-      </div>
+      
       <div className="h-1/5  p-6 flex items-center justify-between relative bg-yellow-400 pt-10">
         <h5
           className="p-1 text-center w-[90%] absolute top-0"
@@ -72,6 +67,10 @@ const DriverRiding = () => {
       >
         <FinishRide ride={rideData} setFinishRidePanel={setFinishRidePanel} />
       </div>
+
+      <div className="h-screen fixed w-screen top-0 z-[-1]">
+        <LiveLocationTracking />
+      </div> 
     </div>
   );
 };
