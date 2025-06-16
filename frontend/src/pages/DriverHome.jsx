@@ -8,6 +8,7 @@ import ConfirmRidePopup from "../components/ConfirmRidePopup";
 import { SocketContext } from "../context/SocketContext";
 import { DriverContextData } from "../context/DriverContext";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const DriverHome = () => {
   const [ridePopupPanel, setRidePopupPanel] = useState(false);
@@ -59,7 +60,7 @@ const DriverHome = () => {
     if (!socket) return;
 
     const handleNewRide = (data) => {
-      console.log('New ride received:', data);
+      console.log("New ride received:", data);
       setRide(data);
       setRidePopupPanel(true);
     };
@@ -73,29 +74,40 @@ const DriverHome = () => {
   }, [socket]);
 
   async function confirmRide() {
-    console.log('Confirming ride:', ride, 'Driver:', driver);
+    console.log("Confirming ride:", ride, "Driver:", driver);
 
-    const token = localStorage.getItem('token')
-    if(!token){
-      console.error('Token not found, Driver may not be auth.')
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("Token not found, Driver may not be authenticated");
+      toast.error("Authentication error. Please login again.");
       return;
     }
-    const res = await axios.post(
-      `${import.meta.env.VITE_BASE_URL}/rides/confirm-ride`,
-      {
-        rideId: ride._id,
-        // driverId: driver._id,
-        
-      },{
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
 
-    console.log('Ride confirmed: ',res.data);
-    setRidePopupPanel(false);
-    setConfirmRidePopupPanel(true);
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/rides/confirm-ride`,
+        {
+          rideId: ride._id,
+          // driverId: driver._id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      console.log("Ride confirmed: ", res.data);
+      toast.success("Ride confirmed!");
+      setRidePopupPanel(false);
+      setConfirmRidePopupPanel(true);
+    } catch (err) {
+      console.error("Error confirming ride:", err);
+      toast.error(
+        err?.response?.data?.message ||
+          "Failed to confirm ride. Please try again."
+      );
+    }
   }
 
   useGSAP(
@@ -172,7 +184,7 @@ const DriverHome = () => {
         className="fixed w-full h-screen translate-y-full z-10 bottom-0 bg-white px-3 py-10 pt-12"
       >
         <ConfirmRidePopup
-          ride= {ride} 
+          ride={ride}
           setConfirmRidePopupPanel={setConfirmRidePopupPanel}
           setRidePopupPanel={setRidePopupPanel}
         />

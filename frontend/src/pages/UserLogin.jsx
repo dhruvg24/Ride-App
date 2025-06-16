@@ -2,42 +2,51 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { UserContextData } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
-import axios from 'axios';
-
+import axios from "axios";
+import { toast } from "react-toastify";
 const UserLogin = () => {
   // 2 way binding
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userData, setUserData] = useState({});
-
+  // const [userData, setUserData] = useState({});
 
   const { user, setUser } = React.useContext(UserContextData);
 
   const navigate = useNavigate();
 
-
-  const submitHandler = async(e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
-    
+
     const userData = {
       email: email,
       password: password,
+    };
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/users/login-user`,
+        userData
+      );
+
+      if (response.status === 200) {
+        const data = response.data;
+        setUser(data.user);
+        // if the user refreshes the login page, the context data will get lost, so we give the token to the context.
+        localStorage.setItem("token", data.token);
+        toast.success("Login successful!");
+        navigate("/home");
+
+        // This will redirect the user to the home page after successful login.
+      }
+      setEmail("");
+      setPassword("");
+      // This will reset/clear the email and password.
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        toast.error("Invalid credentials");
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     }
-
-    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login-user`, userData);
-
-    if(response.status===200){
-      const data = response.data;
-      setUser(data.user);
-      // if the user refreshes the login page, the context data will get lost, so we give the token to the context.
-      localStorage.setItem("token", data.token);
-      navigate('/home');
-      // This will redirect the user to the home page after successful login.
-    }
-
-    setEmail("");
-    setPassword("");
-    // This will reset/clear the email and password.
   };
   return (
     <div className="p-7 flex h-screen flex-col justify-between">

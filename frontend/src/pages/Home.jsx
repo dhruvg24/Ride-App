@@ -13,6 +13,7 @@ import { SocketContext } from "../context/SocketContext";
 import { UserContextData } from "../context/UserContext";
 import { Navigate, useNavigate } from "react-router-dom";
 import LiveLocationTracking from "../components/LiveLocationTracking";
+import { toast } from "react-toastify";
 
 const Home = () => {
   const [pickup, setPickup] = useState("");
@@ -56,6 +57,7 @@ const Home = () => {
 
     const handleRideConfirmed = (ride) => {
       console.log("Ride confirmed by driver: ", ride);
+      toast.info("Driver confirmed your ride!");
       setVehicleFound(false);
       setWaitingForDriver(true);
       setRide(ride);
@@ -227,6 +229,7 @@ const Home = () => {
       setFare(res.data);
     } catch (err) {
       console.error("Failed to fetch fare", err);
+      toast.error("Unable to fetch fare.Pls try again.");
     }
   }
 
@@ -250,10 +253,11 @@ const Home = () => {
           },
         }
       );
-
+      toast.success("Ride request sent to nearby drivers");
       console.log(res.data);
     } catch (err) {
       console.error("Failed to create ride", err);
+      toast.error("Ride request failed. Please try again.");
     }
   }
 

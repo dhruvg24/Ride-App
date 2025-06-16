@@ -5,17 +5,19 @@ import { useEffect, useContext } from "react";
 import { SocketContext } from "../context/SocketContext";
 import { useNavigate } from "react-router-dom";
 import LiveLocationTracking from "../components/LiveLocationTracking";
+import { toast } from "react-toastify";
 const Riding = () => {
   const location = useLocation();
   const { ride } = location.state || {};
   // retrive ride data
   const navigate = useNavigate();
 
-  const {socket} = useContext(SocketContext);
+  const { socket } = useContext(SocketContext);
 
-  socket.on('ride-ended',()=>{
-    navigate('/home')
-  })
+  socket.on("ride-ended", () => {
+    toast.success("Ride completed!");
+    navigate("/home");
+  });
   return (
     <div className="h-screen">
       <Link

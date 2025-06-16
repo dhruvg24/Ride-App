@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 // import UserSignup from "./UserSignup";
 import axios from "axios";
-import {UserContextData} from "../context/UserContext";
+import { UserContextData } from "../context/UserContext";
+import { toast } from "react-toastify";
 const UserSignup = () => {
   // 2 way binding
   const [email, setEmail] = useState("");
@@ -13,35 +14,44 @@ const UserSignup = () => {
 
   const navigate = useNavigate();
 
-  const {user, setUser} = React.useContext(UserContextData);
+  const { user, setUser } = React.useContext(UserContextData);
 
   const submitHandler = async (e) => {
     e.preventDefault();
     const newUser = {
       fullname: {
         firstname: firstName,
-        lastname: lastName, 
+        lastname: lastName,
       },
       email: email,
       password: password,
+    };
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/users/register-user`,
+        newUser
+      );
+      if (response.status === 201) {
+        const data = response.data;
+        setUser(data.user);
+        localStorage.setItem("token", data.token);
+        toast.success("Signup successful!");
+        // if the user refreshes the signup page, the context data will get lost, so we give the token to the context.
+        navigate("/home");
+      }
+
+      setEmail("");
+      setPassword("");
+      setFirstName("");
+      setLastName("");
+      // This will reset/clear the email, password, firstName and lastName.
+    } catch (err) {
+      toast.error(
+        err?.response?.data?.message || "Signup failed, pls try again"
+      );
+
+      console.error("Signup error:", err);
     }
-
-    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/register-user`, newUser);
-
-    if(response.status === 201) {
-      const data = response.data;
-      setUser(data.user);
-      localStorage.setItem("token", data.token);
-      // if the user refreshes the signup page, the context data will get lost, so we give the token to the context.
-      navigate('/home');
-    }
-
-
-    setEmail("");
-    setPassword("");
-    setFirstName("");
-    setLastName("");
-    // This will reset/clear the email, password, firstName and lastName.
   };
   return (
     <div className="p-7 flex h-screen flex-col justify-between">

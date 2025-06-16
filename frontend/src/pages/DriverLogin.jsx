@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { DriverContextData } from "../context/DriverContext";
+import { toast } from "react-toastify";
 
 const DriverLogin = () => {
   // 2 way binding
@@ -21,21 +22,25 @@ const DriverLogin = () => {
       password: password,
     };
 
-    const response = await axios.post(
-      `${import.meta.env.VITE_BASE_URL}/drivers/login-driver`,
-      driver
-    );
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/drivers/login-driver`,
+        driver
+      );
 
-    if (response.status === 200) {
-      const data = response.data;
-      setDriver(data.driver);
-      localStorage.setItem("token", data.token);
-      // if the driver refreshes the login page, the context data will get lost, so we give the token to the context.
-      navigate("/driver-home");
+      if (response.status == 200) {
+        const data = response.data;
+        setDriver(data.driver);
+        localStorage.setItem("token", data.token);
+        navigate("/driver-home");
+        toast.success("Login successful!"); // Optional
+      }
+      setEmail("");
+      setPassword("");
+    } catch (error) {
+      console.error("Error while logging Driver:", error);
+      toast.error("Invalid credentials!");
     }
-    setEmail("");
-    setPassword("");
-    // This will reset/clear the email and password.
   };
   return (
     <div className="p-7 flex h-screen flex-col justify-between">

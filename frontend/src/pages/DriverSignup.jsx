@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { DriverContextData } from "../context/DriverContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const DriverSignup = () => {
   //2 way binding
@@ -37,27 +38,37 @@ const DriverSignup = () => {
         vehicleType: vehicleType,
       },
     };
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/drivers/register-driver`,
+        driverData
+      );
 
-    const response = await axios.post(
-      `${import.meta.env.VITE_BASE_URL}/drivers/register-driver`,
-      driverData
-    );
+      if (response.status === 201) {
+        const data = response.data;
+        setDriver(data.driver);
+        localStorage.setItem("token", data.token);
+        toast.success("Driver registered successfully!");
+        navigate("/driver-home");
+      }
+      setEmail("");
+      setPassword("");
+      setFirstName("");
+      setLastName("");
+      setVehicleColor("");
+      setVehiclePlate("");
+      setVehicleCapacity("");
+      setVehicleType("");
+    } catch (err) {
+      console.error("Driver signup failed", err);
 
-    if (response.status === 201) {
-      const data = response.data;
-      setDriver(data.driver);
-      localStorage.setItem("token", data.token);
-      navigate("/driver-home");
+      if (err.response?.data?.message) {
+        toast.error(err.response.data.message);
+      } else {
+        toast.error("Signup failed. Please try again.");
+      }
     }
 
-    setEmail("");
-    setPassword("");
-    setFirstName("");
-    setLastName("");
-    setVehicleColor("");
-    setVehiclePlate("");
-    setVehicleCapacity("");
-    setVehicleType("");
     // This will reset/clear the vehicle details.
   };
   return (
