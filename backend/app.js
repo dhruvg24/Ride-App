@@ -18,7 +18,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.send({
+    activeStatus: true,
+    error:false
+  })
 });
 app.use("/users", userRoutes);
 
