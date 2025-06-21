@@ -28,7 +28,7 @@ module.exports.createRide = async (req, res) => {
     const nearbyDrivers = await mapService.getNearbyDrivers(
       pickupCoordinates.ltd,
       pickupCoordinates.lng,
-      10
+      1000
     );
     // all drivers under 10km radius - to be corrected later.
 
