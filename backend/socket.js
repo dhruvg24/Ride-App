@@ -6,7 +6,7 @@ let io;
 function initializeSocket(server) {
   io = socketIO(server, {
     cors: {
-      origin: "*",
+      origin: "https://ride-application-01.netlify.app",
       methods: ["GET", "POST"],
       credentials: true,
     },
