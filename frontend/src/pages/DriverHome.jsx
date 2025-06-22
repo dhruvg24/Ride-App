@@ -47,8 +47,6 @@ const DriverHome = () => {
               lng: position.coords.longitude,
             },
           });
-        }, (err)=>{
-          console.log('Location fetch error: ', err); toast.error('Unable to fetch location. Please enable GPS.')
         });
       }
     };
