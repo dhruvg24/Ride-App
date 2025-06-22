@@ -8,6 +8,7 @@ import VehiclePanel from "../components/VehiclePanel";
 import ConfirmedRide from "../components/ConfirmedRide";
 import LookingForDriver from "../components/LookingForDriver";
 import WaitingForDriver from "../components/WaitingForDriver";
+import Logo from '../assets/Logo.png'
 
 import { SocketContext } from "../context/SocketContext";
 import { UserContextData } from "../context/UserContext";
@@ -38,7 +39,7 @@ const Home = () => {
 
   const [ride, setRide] = useState(null);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { socket } = useContext(SocketContext);
   // const { driver } = useContext(DriverContextData);
   const { user } = useContext(UserContextData);
@@ -71,11 +72,20 @@ const Home = () => {
     };
   }, [socket]);
 
-  socket.on('ride-started', ride=>{
-    setWaitingForDriver(false)
-    navigate('/riding', {state: {ride}})
-  })
+  useEffect(() => {
+    if(!socket){
+      return;
+    }
+    const handleRideStarted = (ride)=>{
+      setWaitingForDriver(false);
+      navigate('/riding', {state: {ride}});
+    }
+    socket.on('ride-started',handleRideStarted);
 
+    return ()=>{
+      socket.off('ride-started', handleRideStarted);
+    }
+  }, [socket]);
 
   const handlePickupChange = async (e) => {
     const val = e.target.value;
@@ -266,7 +276,7 @@ const Home = () => {
       <div className="h-screen relative overflow-hidden">
         <img
           className="w-18 absolute left-4 top-4"
-          src="/src/assets/Logo.png"
+          src={Logo}
           alt="logo"
         />
 

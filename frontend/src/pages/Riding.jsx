@@ -6,6 +6,8 @@ import { SocketContext } from "../context/SocketContext";
 import { useNavigate } from "react-router-dom";
 import LiveLocationTracking from "../components/LiveLocationTracking";
 import { toast } from "react-toastify";
+import carImg from '../assets/car-img-removebg-preview.png'
+
 const Riding = () => {
   const location = useLocation();
   const { ride } = location.state || {};
@@ -14,10 +16,23 @@ const Riding = () => {
 
   const { socket } = useContext(SocketContext);
 
-  socket.on("ride-ended", () => {
-    toast.success("Ride completed!");
-    navigate("/home");
-  });
+  useEffect(()=>{
+    if(!socket){
+      return;
+    }
+
+    const handleRideEnd = ()=>{
+      toast.success("Ride completed!");
+      navigate("/home");
+    };
+
+    socket.on('ride-ended', handleRideEnd);
+
+    return ()=>{
+      socket.off('ride-ended', handleRideEnd);
+    };
+  }, [socket, navigate])
+
   return (
     <div className="h-screen">
       <Link
@@ -33,7 +48,7 @@ const Riding = () => {
       <div className="h-1/2 p-4">
         <div className="flex items-center justify-between">
           <img
-            src="/src/assets/car-img-removebg-preview.png"
+            src={carImg}
             className="h-16"
             alt="car-image"
           />

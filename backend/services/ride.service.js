@@ -77,7 +77,7 @@ async function createRide({ user, pickup, destination, vehicleType }) {
 
   const fare = await getFare(pickup, destination);
 
-  const ride = rideModel.create({
+  const ride = await rideModel.create({
     user,
     pickup,
     destination,
@@ -141,6 +141,8 @@ async function startRide({ rideId, otp }) {
     throw new Error("Invalid OTP");
   }
 
+  // ride.status = "ongoing"
+  // await ride.save();
   await rideModel.findOneAndUpdate(
     {
       _id: rideId,

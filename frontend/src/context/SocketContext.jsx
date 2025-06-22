@@ -3,7 +3,7 @@ import {io} from 'socket.io-client';
 
 export const SocketContext = createContext();
 
-const socket = io(`${import.meta.env.VITE_BASE_URL}`, {
+const socket = io(`${import.meta.env.VITE_SOCKET_URL}`, {
   transports: ['websocket'],
   withCredentials: true
 });
@@ -18,6 +18,13 @@ const SocketProvider = ({children}) => {
     socket.on('disconnect', ()=>{
         console.log('Disconnected from server')
     })
+
+    // optional cleanup
+    // return ()=> {
+    //   socket.off('connect');
+    //   socket.off('disconnect')
+    //   socket.disconnect();
+    // }
   }, []);
 
 //   const sendMessage = (eventName, message)=>{

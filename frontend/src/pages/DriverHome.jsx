@@ -9,6 +9,7 @@ import { SocketContext } from "../context/SocketContext";
 import { DriverContextData } from "../context/DriverContext";
 import axios from "axios";
 import { toast } from "react-toastify";
+import Logo from '../assets/Logo.png';
 
 const DriverHome = () => {
   const [ridePopupPanel, setRidePopupPanel] = useState(false);
@@ -22,10 +23,12 @@ const DriverHome = () => {
   const { driver } = useContext(DriverContextData);
 
   useEffect(() => {
-    socket.emit("join", {
-      userId: driver._id,
-      userType: "driver",
-    });
+    if (driver && socket) {
+      socket.emit("join", {
+        userId: driver._id,
+        userType: "driver",
+      });
+    }
 
     const updateLocation = () => {
       if (navigator.geolocation) {
@@ -44,6 +47,8 @@ const DriverHome = () => {
               lng: position.coords.longitude,
             },
           });
+        }, (err)=>{
+          console.log('Location fetch error: ', err); toast.error('Unable to fetch location. Please enable GPS.')
         });
       }
     };
@@ -51,7 +56,7 @@ const DriverHome = () => {
     // after 15 seconds location is fetched.
     // To be updated.
     updateLocation();
-    // return ()=>clearInterval(locationInterval)
+    return () => clearInterval(locationInterval);
     // this is to avoid memory leakage when the component unmounts.
   }, [socket, driver]);
 
@@ -145,7 +150,7 @@ const DriverHome = () => {
       <div className="fixed p-6 top-0 flex items-center justify-between w-screen">
         <img
           className="w-16"
-          src="src/assets/Logo.png"
+          src={Logo}
           alt="driver-home-image"
         />
         <Link
