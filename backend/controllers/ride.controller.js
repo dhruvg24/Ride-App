@@ -26,11 +26,11 @@ module.exports.createRide = async (req, res) => {
     const pickupCoordinates = await mapService.getAddressCoordinates(pickup);
     console.log(pickupCoordinates);
     const nearbyDrivers = await mapService.getNearbyDrivers(
-      pickupCoordinates.ltd,
       pickupCoordinates.lng,
-      1000
+      pickupCoordinates.ltd,
+      10
     );
-    // all drivers under 10km radius - to be corrected later.
+    // all drivers under 10km radius
 
     console.log("Nearby drivers:", nearbyDrivers);
     ride.otp = "";
