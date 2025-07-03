@@ -10,7 +10,7 @@ function initializeSocket(server) {
       methods: ["GET", "POST"],
       credentials: true,
     },
-    transports: ["websocket"]
+    transports: ["websocket","polling"]
   });
 
   io.on("connection", (socket) => {
